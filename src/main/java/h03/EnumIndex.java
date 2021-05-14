@@ -1,4 +1,4 @@
-package main.java.h03;
+package h03;
 
 public class EnumIndex<T extends Enum<T>> implements FunctionToInt<T> {
   Class<T> enumClass;
@@ -12,10 +12,11 @@ public class EnumIndex<T extends Enum<T>> implements FunctionToInt<T> {
     return enumClass.getEnumConstants().length;
   }
 
+
   @Override
-  public <T1> int apply(T1 t1) throws IllegalArgumentException {
+  public int apply(T t) throws IllegalArgumentException {
     int i = 0;
-    for (T t: enumClass.getEnumConstants()){
+    for (T t1: enumClass.getEnumConstants()){
       if (t.equals(t1)){
         return i;
       }

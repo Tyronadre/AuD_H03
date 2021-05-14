@@ -1,15 +1,17 @@
-package main.java.h03;
+package h03;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SelectionOfCharsIndex implements FunctionToInt<Character> {
-  private char[] theChars;
+  private final char[] theChars;
 
   public SelectionOfCharsIndex(List<Character> theAlphabet) {
     theChars = new char[theAlphabet.size()];
     int i = 0;
     for (char c : theAlphabet){
-      theChars[c] = theAlphabet.get(0);
+      theChars[i] = c;
+      i++;
     }
   }
 
@@ -19,11 +21,18 @@ public class SelectionOfCharsIndex implements FunctionToInt<Character> {
   }
 
   @Override
-  public <T> int apply(T t) throws IllegalArgumentException {
+  public int apply(Character character) throws IllegalArgumentException {
     for (int i = 0; i < theChars.length; i++){
-      if (t.equals(theChars[i]))
+      if (character.equals(theChars[i]))
         return i;
     }
     throw new IllegalArgumentException();
+  }
+
+  @Override
+  public String toString() {
+    return "SelectionOfCharsIndex{" +
+      "theChars=" + Arrays.toString(theChars) +
+      '}';
   }
 }

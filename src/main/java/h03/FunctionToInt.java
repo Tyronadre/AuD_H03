@@ -1,4 +1,4 @@
-package main.java.h03;
+package h03;
 
 public interface FunctionToInt <T> {
   int sizeOfAlphabet();
@@ -11,5 +11,6 @@ public interface FunctionToInt <T> {
    * @return Integer
    * @throws IllegalArgumentException Exception
    */
-  <T> int apply (T t) throws IllegalArgumentException;
+  int apply (T t) throws IllegalArgumentException;
+
 }

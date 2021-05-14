@@ -1,13 +1,15 @@
-package main.java.h03;
+package h03;
 
 public class UnicodeNumberOfCharIndex implements FunctionToInt<Character>{
   @Override
   public int sizeOfAlphabet() {
-    return Character.MAX_CODE_POINT;
+    return Character.MAX_VALUE + 1;
   }
 
   @Override
-  public <T> int apply(T t) throws IllegalArgumentException {
-    return (int) t;
+  public int apply(Character character) throws IllegalArgumentException {
+    return (Character) character;
   }
+
+
 }
