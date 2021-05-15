@@ -91,7 +91,7 @@ class PartialMatchLengthUpdateValuesAsMatrixTest {
         for (int i = 0, valueOfFirstCharacter = (int) FunctionToIntTest.apply.invoke(functionToIntInstance, needle[0]); i < needle.length + 1; i++)
             assertTrue(
                     matrix.get(i, valueOfFirstCharacter) > 0,
-                    "Values in column apply(" + needle[0] + ") (or row if alphabet is assigned to rows) have to be at least 1 " + "in row "+ (i + 1)
+                    "Values in column apply(needle[0]) (or row if alphabet is assigned to rows) have to be at least 1"
             );
 
         // check that values for needle elements are correct
@@ -99,14 +99,14 @@ class PartialMatchLengthUpdateValuesAsMatrixTest {
             assertEquals(
                     i + 1,
                     matrix.get(i, (int) FunctionToIntTest.apply.invoke(functionToIntInstance, needle[i])),
-                    "Value for apply( " + needle[i] + ") in row i (or column i if alphabet is assigned to rows) should be i + 1, i=" + i
+                    "Value for apply(needle[i]) in row i (or column i if alphabet is assigned to rows) should be i + 1"
             );
 
         // check... idk how to describe it, involves computePartialMatchLengthUpdateValues
         assertEquals(
                 repeatLength + 1,
                 matrix.get(needle.length, (int) FunctionToIntTest.apply.invoke(functionToIntInstance, needle[repeatLength])),
-                "The value at index apply(needle[repeatLength])= "+needle[repeatLength] + "; repLength= "+repeatLength+" in the last row of the lookup table " +
+                "The value at index apply(needle[repeatLength]) in the last row of the lookup table " +
                         "(or vice versa if alphabet is assigned to rows) does not equal the expected value. " +
                         "Take a look at the summary for the string matching BOFA algorithm in moodle"
         );
