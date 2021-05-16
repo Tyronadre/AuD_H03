@@ -295,7 +295,7 @@ class PartialMatchLengthUpdateValuesAsAutomatonTest {
 
         // check that method returns correct values for match
         for (int i = 0; i < needle.length; i++)
-            assertEquals(i + 1, getPartialMatchLengthUpdate.invoke(instance, i, needle[i]),
+             assertEquals(i + 1, getPartialMatchLengthUpdate.invoke(instance, i, needle[i]),
                     "getPartialMatchLengthUpdate(i, needle[i]) should return i + 1");
 
         // the method is rather trivial to implement, that the states array is correct is more important
