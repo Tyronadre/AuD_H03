@@ -3,7 +3,7 @@ package h03;
 import java.util.Arrays;
 
 public class PartialMatchLengthUpdateValuesAsMatrix<T> extends PartialMatchLengthUpdateValues<T> {
-  private int[][] matrix;
+  private final int[][] matrix;
 
   public PartialMatchLengthUpdateValuesAsMatrix(FunctionToInt<T> functionToInt, T[] searchString) {
     super(functionToInt);
@@ -28,7 +28,7 @@ public class PartialMatchLengthUpdateValuesAsMatrix<T> extends PartialMatchLengt
 
 
     System.out.println("{ AlphLength=" + tFunctionToInt.sizeOfAlphabet() + ", Searchstring=" + Arrays.toString(searchString) + ", Pointer=" + pointer + " }");
-    System.out.println("0\t" + Arrays.toString(new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}));
+    System.out.println("al:\t" + Arrays.toString(new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}));
     int counter = 0;
     for (int[] i : matrix) {
       counter++;
