@@ -4,12 +4,15 @@ import java.util.Arrays;
 
 abstract public class PartialMatchLengthUpdateValues<T> {
   protected FunctionToInt<T> tFunctionToInt;
+  protected T[] searchString;
 
   public PartialMatchLengthUpdateValues(FunctionToInt<T> tFunctionToInt) {
     this.tFunctionToInt = tFunctionToInt;
   }
 
   abstract public int getPartialMatchLengthUpdate(int num, T t);
+
+  abstract public int getSearchStringLength();
 
   protected int computePartialMatchLengthUpdateValues(T[] searchString) {
     var front = new Object[searchString.length - 1];

@@ -72,7 +72,8 @@ public class StringMatcherTest {
 
         //noinspection unchecked
         List<Integer> result = (List<Integer>) findAllMatches.invoke(instance, (Object) stack.toArray());
-
+      System.out.println("Res: "+result);
+      System.out.println("Should be: "+matchIndices);
         assertEquals(matchIndices.size(), result.size());
         assertTrue(result.containsAll(matchIndices));
     }

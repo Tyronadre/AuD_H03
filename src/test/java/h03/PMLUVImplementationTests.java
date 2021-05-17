@@ -288,7 +288,7 @@ class PartialMatchLengthUpdateValuesAsAutomatonTest {
       assertEquals(i + 1, transitionTest.index.get(transition), "int-field of transition doesn't have the correct value");
       assertEquals(needle[i], ((List<?>) transitionTest.target.get(transition)).get(0), "List<T>-field of transition doesn't have the correct value");
     }
-
+    System.out.println("repeatLength="+repeatLength+" ");
     assertEquals(repeatLength + 1, transitionTest.index.get(((List<?>) states[needle.length]).get(0)));
     assertEquals(needle[repeatLength], ((List<?>) transitionTest.target.get(((List<?>) states[needle.length]).get(0))).get(0));
   }
@@ -302,7 +302,7 @@ class PartialMatchLengthUpdateValuesAsAutomatonTest {
     // check that method returns correct values for match
     for (int i = 0; i < needle.length; i++)
       assertEquals(i + 1, getPartialMatchLengthUpdate.invoke(instance, i, needle[i]),
-        "getPartialMatchLengthUpdate(i, needle[i]) should return i + 1");
+        "getPartialMatchLengthUpdate(i, needle[i]) should return i + 1, i is: "+ i);
 
     // the method is rather trivial to implement, that the states array is correct is more important
     // TODO: this one is not _as_ trivial, maybe a more sophisticated test would be quite helpful?

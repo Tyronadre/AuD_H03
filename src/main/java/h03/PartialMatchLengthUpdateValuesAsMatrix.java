@@ -7,6 +7,7 @@ public class PartialMatchLengthUpdateValuesAsMatrix<T> extends PartialMatchLengt
 
   public PartialMatchLengthUpdateValuesAsMatrix(FunctionToInt<T> functionToInt, T[] searchString) {
     super(functionToInt);
+    this.searchString = searchString;
     matrix = new int[searchString.length + 1][tFunctionToInt.sizeOfAlphabet()];
     for (int state = 0; state < searchString.length; state++)
       for (int letterS = 0; letterS < tFunctionToInt.sizeOfAlphabet(); letterS++) {
@@ -27,13 +28,13 @@ public class PartialMatchLengthUpdateValuesAsMatrix<T> extends PartialMatchLengt
       matrix[searchString.length][tFunctionToInt.apply(searchString[0])] = 1;
 
 
-    System.out.println("{ AlphLength=" + tFunctionToInt.sizeOfAlphabet() + ", Searchstring=" + Arrays.toString(searchString) + ", Pointer=" + pointer + " }");
-    System.out.println("al:\t" + Arrays.toString(new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}));
-    int counter = 0;
-    for (int[] i : matrix) {
-      counter++;
-      System.out.println(counter + "\t" + Arrays.toString(i));
-    }
+//    System.out.println("{ AlphLength=" + tFunctionToInt.sizeOfAlphabet() + ", Searchstring=" + Arrays.toString(searchString) + ", Pointer=" + pointer + " }");
+//    System.out.println("al:\t" + Arrays.toString(new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'}));
+//    int counter = 0;
+//    for (int[] i : matrix) {
+//      counter++;
+//      System.out.println(counter + "\t" + Arrays.toString(i));
+//    }
   }
 
   @Override
@@ -47,5 +48,10 @@ public class PartialMatchLengthUpdateValuesAsMatrix<T> extends PartialMatchLengt
   @Override
   public int getPartialMatchLengthUpdate(int num, T t) {
     return matrix[num][tFunctionToInt.apply(t)];
+  }
+
+  @Override
+  public int getSearchStringLength() {
+    return searchString.length;
   }
 }
