@@ -15,6 +15,8 @@ abstract public class PartialMatchLengthUpdateValues<T> {
   abstract public int getSearchStringLength();
 
   protected int computePartialMatchLengthUpdateValues(T[] searchString) {
+    if (searchString.length == 0)
+      return 0;
     var front = new Object[searchString.length - 1];
     var back = new Object[searchString.length - 1];
     int k = 0;

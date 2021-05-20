@@ -66,14 +66,13 @@ public class StringMatcherTest {
     @ParameterizedTest
     @ArgumentsSource(RandomMatcherArgumentsProvider.class)
     public void testFindAllMatchesLookupTable(List<Character> stack, List<Character> needle, List<Integer> matchIndices) throws ReflectiveOperationException {
-        Object functionToIntInstance = functionToIntProxyForAlphabet(alphabet);
+        Object functionToIntInstance = functionToIntProxyForAlphabet(ALPHABET);
         Object matrixInstance = PartialMatchLengthUpdateValuesAsMatrixTest.constructor.newInstance(functionToIntInstance, needle.toArray());
         Object instance = constructor.newInstance(matrixInstance);
 
         //noinspection unchecked
         List<Integer> result = (List<Integer>) findAllMatches.invoke(instance, (Object) stack.toArray());
-      System.out.println("Res: "+result);
-      System.out.println("Should be: "+matchIndices);
+
         assertEquals(matchIndices.size(), result.size());
         assertTrue(result.containsAll(matchIndices));
     }
@@ -81,7 +80,7 @@ public class StringMatcherTest {
     @ParameterizedTest
     @ArgumentsSource(RandomMatcherArgumentsProvider.class)
     public void testFindAllMatchesAutomaton(List<Character> stack, List<Character> needle, List<Integer> matchIndices) throws ReflectiveOperationException {
-        Object functionToIntInstance = functionToIntProxyForAlphabet(alphabet);
+        Object functionToIntInstance = functionToIntProxyForAlphabet(ALPHABET);
         Object automatonInstance = PartialMatchLengthUpdateValuesAsAutomatonTest.constructor.newInstance(functionToIntInstance, needle.toArray());
         Object instance = constructor.newInstance(automatonInstance);
 

@@ -10,6 +10,4 @@ public class UnicodeNumberOfCharIndex implements FunctionToInt<Character>{
   public int apply(Character character) throws IllegalArgumentException {
     return (Character) character;
   }
-
-
 }

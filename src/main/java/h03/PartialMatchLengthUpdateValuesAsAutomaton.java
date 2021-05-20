@@ -11,26 +11,34 @@ public class PartialMatchLengthUpdateValuesAsAutomaton<T> extends PartialMatchLe
     super(tFunctionToInt);
     this.searchString = searchString;
     theStates = (List<Transition<T>>[]) new List[searchString.length + 1];
-    int counter = 0;
+    int pointer = computePartialMatchLengthUpdateValues(searchString);
+
     for (int state = 0; state < searchString.length; state++) {
-      List<Transition<T>> singleItemList = new ArrayList<>();
-      for (int letterS = 0; letterS < tFunctionToInt.sizeOfAlphabet(); letterS++) {
-        if (tFunctionToInt.apply(searchString[state]) == letterS) {
-          List<T> l = new ArrayList<>();
-          if (singleItemList.isEmpty())
-            singleItemList.add(new Transition<>(state + 1, l));
-          l.add(searchString[state]);
-        }
+      int innerpointer = computePartialMatchLengthUpdateValues(Arrays.copyOfRange(searchString,0,state));
+      List<Transition<T>> transitionList = new ArrayList<>();
+      transitionList.add(new Transition<>(state + 1, List.of(searchString[state])));
+      if (innerpointer != 0  && tFunctionToInt.apply(searchString[innerpointer]) != tFunctionToInt.apply(searchString[state]))
+        transitionList.add(new Transition<>(innerpointer + 1, List.of(searchString[innerpointer])));
+      if (tFunctionToInt.apply(searchString[0]) != tFunctionToInt.apply(searchString[state])) {
+        transitionList.add(new Transition<>(1, List.of(searchString[0])));
       }
-      theStates[state] = singleItemList;
+      theStates[state] = transitionList;
     }
+
     //Letzter Zustand
     List<Transition<T>> singleItemList = new ArrayList<>();
-    List<T> l = new ArrayList<>();
-    int pointer = computePartialMatchLengthUpdateValues(searchString);
-    l.add(searchString[pointer]);
-    singleItemList.add(new Transition<>(pointer + 1, l));
+
+    singleItemList.add(new Transition<>(pointer + 1, List.of(searchString[pointer])));
+    if (searchString[0] != searchString[pointer])
+      singleItemList.add(new Transition<>(1,List.of(searchString[0])));
     theStates[theStates.length - 1] = singleItemList;
+
+
+      System.out.println("searchString: " + Arrays.toString(searchString) + ", Pointer="+pointer);
+    for (var t :theStates
+         ) {
+      System.out.println(t);
+    }
   }
 
   @Override
@@ -41,7 +49,7 @@ public class PartialMatchLengthUpdateValuesAsAutomaton<T> extends PartialMatchLe
         return transition.index;
       }
 
-    return -1;
+    return 0;
   }
 
   @Override

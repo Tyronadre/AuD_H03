@@ -21,10 +21,13 @@ import java.util.stream.Stream;
 
 public class Utils {
 
-    public static final long seed = new Random().nextLong();
-    public static final Random random = new Random(seed);
+    public static final long SEED = new Random().nextLong();
+    public static final Random RANDOM = new Random(SEED);
     public static final IntFunction<Character> CAST_TO_CHARACTER = n -> (char) n;
-    public static final List<Object> alphabet = IntStream.range(0, 26).mapToObj(i -> (char) ('A' + i)).collect(Collectors.toUnmodifiableList());
+    public static final List<Object> ALPHABET = Stream.concat(
+            IntStream.range('A', 'Z' + 1).mapToObj(CAST_TO_CHARACTER),
+            IntStream.range('a', 'z' + 1).mapToObj(CAST_TO_CHARACTER)
+    ).collect(Collectors.toUnmodifiableList());
 
     public static Class<?> getClassForName(String className) {
         try {
@@ -52,40 +55,39 @@ public class Utils {
         return Proxy.newProxyInstance(functionToIntClass.getClassLoader(), new Class[] {functionToIntClass}, handler);
     }
 
-    public static String randomLatinString(int size) {
-        return IntStream
-                .generate(() -> 'A' + random.nextInt(26))
+    public static Stream<Character> randomLowercaseCharStream(int size) {
+        return IntStream.generate(() -> 'a' + RANDOM.nextInt(26))
                 .mapToObj(CAST_TO_CHARACTER)
-                .map(String::valueOf)
-                .limit(size)
-                .collect(Collectors.joining());
+                .distinct()
+                .limit(size);
     }
 
-    public static Character[] stringAsArray(String s) {
-        return s.chars()
-                .mapToObj(CAST_TO_CHARACTER)
-                .toArray(Character[]::new);
+    public static Stream<Character> randomUppercaseCharStream(int size) {
+        return IntStream.generate(() -> 'A' + RANDOM.nextInt(26))
+                        .mapToObj(CAST_TO_CHARACTER)
+                        .distinct()
+                        .limit(size);
     }
 
     @Test
     public void printSeed() {
-        System.out.println("Seed: " + seed);
+        System.out.println("Seed: " + SEED);
     }
 
-    private static final Map<Class<?>, Boolean> defCorrect = new HashMap<>();
+    private static final Map<Class<?>, Boolean> CLASS_CORRECT_LOOKUP = new HashMap<>();
 
     public static boolean definitionCorrect(Class<?> c) {
-        if (defCorrect.containsKey(c))
-            return defCorrect.get(c);
+        if (CLASS_CORRECT_LOOKUP.containsKey(c))
+            return CLASS_CORRECT_LOOKUP.get(c);
 
         try {
             c.getDeclaredMethod(c.getDeclaredAnnotation(DefinitionCheck.class).value()).invoke(null);
-            defCorrect.put(c, true);
+            CLASS_CORRECT_LOOKUP.put(c, true);
         } catch (Exception e) {
-            defCorrect.put(c, false);
+            CLASS_CORRECT_LOOKUP.put(c, false);
         }
 
-        return defCorrect.get(c);
+        return CLASS_CORRECT_LOOKUP.get(c);
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -97,12 +99,12 @@ public class Utils {
 
 class RandomCharProvider implements ArgumentsProvider {
 
-    private static final int numberOfRandomArguments = 3;
+    private static final int MAX_STREAM_SIZE = 3;
 
     /**
      * Returns a stream of arguments with format {@code (char as integer, char)}.
      * The stream will always contain arguments for the lower and upper bound of {@link Character}.
-     * If {@link RandomCharProvider#numberOfRandomArguments} is greater than zero then the stream will
+     * If {@link RandomCharProvider#MAX_STREAM_SIZE} is greater than zero then the stream will
      * contain that amount of arguments with random characters. So the total amount of elements
      * in the stream will be 2 + numberOfRandomArguments
      * @param context the context supplied by JUnit, may be null when invoking directly
@@ -112,8 +114,8 @@ class RandomCharProvider implements ArgumentsProvider {
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
         return Stream.concat(
                 Stream.of(Arguments.of(0, '\u0000'), Arguments.of(65535, '\uFFFF')),
-                new Random(Utils.seed)
-                        .ints(numberOfRandomArguments, 1, 65535)
+                new Random(Utils.SEED)
+                        .ints(MAX_STREAM_SIZE, 1, 65535)
                         .mapToObj(i -> Arguments.of(i, (char) i))
         );
     }
@@ -121,48 +123,51 @@ class RandomCharProvider implements ArgumentsProvider {
 
 class RandomNeedleProvider implements ArgumentsProvider {
 
-    private static final int numberOfRandomArguments = 5;
+    private static final int MAX_STREAM_SIZE = 5;
+    private static final int MAX_NEEDLE_LENGTH = 10;
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-        String[] needles = new String[numberOfRandomArguments];
+        return Stream.generate(() -> Utils.randomUppercaseCharStream(MAX_NEEDLE_LENGTH))
+                     .limit(MAX_STREAM_SIZE)
+                     .map(stream -> {
+                         List<Character> needle = stream.collect(Collectors.toList());
+                         int repeatLength = Utils.RANDOM.nextInt(MAX_NEEDLE_LENGTH);
 
-        for (int i = 0; i < needles.length; i++)
-            needles[i] = Utils.randomLatinString(10);
+                         needle.addAll(needle.subList(0, repeatLength));
 
-        return Arrays.stream(needles).map(s -> {
-            int repeatLength = Utils.random.nextInt(s.length());
-
-            return Arguments.of(
-                    Utils.stringAsArray(s + s.substring(0, repeatLength)),
-                    repeatLength
-            );
-        });
+                         return Arguments.of(
+                                 needle.toArray(Character[]::new),
+                                 repeatLength
+                         );
+                     });
     }
 }
 
 class RandomMatcherArgumentsProvider implements ArgumentsProvider {
 
+    private static final int MAX_STREAM_SIZE = 5;
+    private static final int MAX_NEEDLE_LENGTH = 10;
     private static final int STACK_SIZE = 20;
     private static final double NEEDLE_FREQUENCY = 0.1;
     private static final double OVERLAP_FREQUENCY = 0.2;
 
     @Override
     public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
-        return new RandomNeedleProvider().provideArguments(null).map(arguments -> {
-            List<Character> needle = Arrays.stream(((Character[]) arguments.get()[0])).collect(Collectors.toList()),
-                            stack = Utils.randomLatinString(STACK_SIZE)
-                                         .chars()
-                                         .mapToObj(Utils.CAST_TO_CHARACTER)
-                                         .map(character -> {
-                                             if (Utils.random.nextDouble() < NEEDLE_FREQUENCY)
-                                                 return Utils.random.nextDouble() < OVERLAP_FREQUENCY ? '#' : '$';
-                                             else
-                                                 return character;
-                                         })
-                                         .collect(Collectors.toList());
+        return Stream.generate(() -> {
+            List<Character> needle = Utils.randomUppercaseCharStream(MAX_NEEDLE_LENGTH).collect(Collectors.toList()),
+                            stack = Utils.randomLowercaseCharStream(STACK_SIZE)
+                                           .map(character -> {
+                                               if (Utils.RANDOM.nextDouble() < NEEDLE_FREQUENCY)
+                                                   return Utils.RANDOM.nextDouble() < OVERLAP_FREQUENCY ? '#' : '$';
+                                               else
+                                                   return character;
+                                           })
+                                           .collect(Collectors.toList());
             List<Integer> matchIndices = new ArrayList<>();
-            int repeatLength = (int) arguments.get()[1];
+            int repeatLength = Utils.RANDOM.nextInt(MAX_NEEDLE_LENGTH);
+
+            needle.addAll(needle.subList(0, repeatLength));
 
             for (int i = 0; i < stack.size(); i++)
                 switch (stack.get(i)) {
@@ -185,6 +190,6 @@ class RandomMatcherArgumentsProvider implements ArgumentsProvider {
                 }
 
             return Arguments.of(stack, needle, matchIndices);
-        });
+        }).limit(MAX_STREAM_SIZE);
     }
 }
